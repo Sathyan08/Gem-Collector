@@ -12,6 +12,7 @@ module Collector
 
   def make_collection(variable)
     my_class.collections[variable] = { }
+    check_value(variable)
   end
 
   def my_class
@@ -19,13 +20,12 @@ module Collector
   end
 
   def collections_check
-    make_collections if !made_collections?
-    consider_all
+    no_collections? ? make_collections : consider_all
     my_class.collections[:all][object_id] = self
   end
 
-  def made_collections?
-    !my_class.collections.empty?
+  def no_collections?
+    my_class.collections.empty?
   end
 
   def consider_all
@@ -33,11 +33,11 @@ module Collector
   end
 
   def consider(variable)
-    add_to_(variable) if instance_variable_get(variable).class == TrueClass
+    my_class.collections.has_key?(variable) ? check_value(variable) : make_collection(variable)
   end
 
-  def add_to_(variable)
-    my_class.collections[variable][object_id] = self
+  def check_value(variable)
+    my_class.collections[variable][object_id] = self if instance_variable_get(variable).class == TrueClass
   end
 
   module ClassMethods

@@ -20,12 +20,16 @@ module Collector
 
   def collections_check
     make_collections if !made_collections?
-    instance_variables.each { |variable| consider(variable) }
+    consider_all
     my_class.collections[:all][object_id] = self
   end
 
   def made_collections?
     !my_class.collections.empty?
+  end
+
+  def consider_all
+    instance_variables.each { |variable| consider(variable) }
   end
 
   def consider(variable)

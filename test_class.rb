@@ -8,7 +8,8 @@ class TestClass
 
   def initialize
     @happy = true
-    @age = 18
+    @sad = false
+    @age = rand(20..30)
     collections_check
   end
 

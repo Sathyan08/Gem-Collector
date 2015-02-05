@@ -5,22 +5,17 @@ module Collector
     base.instance_variable_set(:@collections, { })
   end
 
-  def make_collections
-    instance_variables.each { |variable| make_collection(variable)  }
-    my_class.collections[:all] = { }
-  end
-
-  def make_collection(variable)
-    my_class.collections[variable] = { }
-    check_value(variable)
-  end
-
   def my_class
     self.class
   end
 
+  def initialize_all
+    my_class.collections[:all] = { }
+  end
+
   def collections_check
-    no_collections? ? make_collections : consider_all
+    initialize_all if no_collections?
+    consider_all
     my_class.collections[:all][object_id] = self
   end
 
@@ -36,8 +31,24 @@ module Collector
     my_class.collections.has_key?(variable) ? check_value(variable) : make_collection(variable)
   end
 
+  def make_collection(variable)
+    my_class.collections[variable] = { }
+    check_value(variable)
+  end
+
   def check_value(variable)
-    my_class.collections[variable][object_id] = self if instance_variable_get(variable).class == TrueClass
+    value = instance_variable_get(variable)
+    value_key = keyify(value)
+    if my_class.collections[variable].has_key?(value.to_s)
+      my_class.collections[variable][value_key][object_id] = self
+    else
+      my_class.collections[variable][value_key] = { }
+      my_class.collections[variable][value_key][object_id] = self
+    end
+  end
+
+  def keyify(value)
+    value.to_s.to_sym
   end
 
   module ClassMethods

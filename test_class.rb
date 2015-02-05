@@ -9,7 +9,7 @@ class TestClass
   def initialize
     @happy = true
     @age = 18
-    make_collections
+    collections_check
   end
 
 end

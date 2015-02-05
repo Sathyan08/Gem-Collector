@@ -2,20 +2,30 @@ module Collector
 
   def self.included(base)
     base.extend(ClassMethods)
-    base.instance_variable_set(:@collections, {})
+    base.instance_variable_set(:@collections, { })
   end
 
   def make_collections
-    instance_variables = self.instance_variables
-    instance_variables.each { |variable| my_class.collections[variable] = { } }
+    instance_variables.each { |variable| make_collection(variable)  }
+    my_class.collections[:all] = { }
+  end
+
+  def make_collection(variable)
+    my_class.collections[variable] = { }
   end
 
   def my_class
     self.class
   end
 
-  def collected?
-    my_class.collected
+  def collections_check
+    make_collections if !made_collections?
+    instance_variables.each { |variable| consider(variable) }
+    my_class.collections[:all][object_id] = self
+  end
+
+  def made_collections?
+    !my_class.collections.empty?
   end
 
   def consider(variable)
@@ -27,7 +37,7 @@ module Collector
   end
 
   module ClassMethods
-    attr_accessor :collections
+    attr_reader :collections
   end
 
 end

@@ -16,9 +16,7 @@ module Collector
   end
 
   module ClassMethods
-    def collections
-      @collections
-    end
+    attr_reader :collections
   end
 
 end

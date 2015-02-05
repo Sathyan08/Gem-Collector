@@ -9,18 +9,14 @@ module Collector
     self.class
   end
 
-  def initialize_all
-    my_class.collections[:all] = { }
-  end
-
-  def collections_check
-    initialize_all if no_collections?
-    consider_all
+  def make_collectable
+    my_class.collections[:all] = { } if !my_class.collections.has_key?(:all)
     my_class.collections[:all][object_id] = self
   end
 
-  def no_collections?
-    my_class.collections.empty?
+  def collect_as_made
+    make_collectable
+    consider_all
   end
 
   def consider_all
@@ -53,6 +49,18 @@ module Collector
 
   module ClassMethods
     attr_reader :collections
+
+    def all_collection
+      self.collections[:all]
+    end
+
+    def all_instances
+      self.collections[:all].values
+    end
+
+    def make_collections
+      self.collections[:all].each_value { |instance| instance.consider_all }
+    end
   end
 
 end

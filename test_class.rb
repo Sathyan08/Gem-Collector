@@ -10,7 +10,8 @@ class TestClass
     @happy = true
     @sad = false
     @age = rand(20..30)
-    collections_check
+
+    collect_as_made
   end
 
 end

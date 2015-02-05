@@ -2,21 +2,32 @@ module Collector
 
   def self.included(base)
     base.extend(ClassMethods)
+    base.instance_variable_set(:@collections, {})
   end
 
   def make_collections
     instance_variables = self.instance_variables
+    instance_variables.each { |variable| my_class.collections[variable] = { } }
+  end
 
-    my_class = self.class
-    my_class.instance_variable_set(:@collections, { })
+  def my_class
+    self.class
+  end
 
-    instance_variables.each { |variable| my_class.collections[variable] = { }  }
+  def collected?
+    my_class.collected
+  end
 
-    # instance_variables.each {|variable| my_class.instance_variable_get(:@collections).[variable] = { } }
+  def consider(variable)
+    add_to_(variable) if instance_variable_get(variable).class == TrueClass
+  end
+
+  def add_to_(variable)
+    my_class.collections[variable][object_id] = self
   end
 
   module ClassMethods
-    attr_reader :collections
+    attr_accessor :collections
   end
 
 end

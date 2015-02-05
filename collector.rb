@@ -61,6 +61,12 @@ module Collector
     def make_collections
       self.collections[:all].each_value { |instance| instance.consider_all }
     end
+
+    def reset_collections
+      all_inst = self.all_instances
+      self.collections.clear
+      all_inst.each {|instance| instance.collect_as_made }
+    end
   end
 
 end

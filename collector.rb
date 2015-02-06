@@ -87,9 +87,20 @@ module Collector
       values
     end
 
-    def all_with_value(variable, value)
+    def equal_to(variable, value)
       key = keyify(value)
       collections[variable][key].values
+    end
+
+    def less_than_or_equal_to(variable, value)
+      possibilities = possible_values(variable)
+      new_values = possibilities.select { |possibility| possibility <= value }
+
+      results = new_values.inject({ }) do | memo , new_value|
+        memo.merge(collections[variable][keyify(new_value)])
+      end
+
+      results.values
     end
 
   end

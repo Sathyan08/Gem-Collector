@@ -35,7 +35,7 @@ module Collector
   def check_value(variable)
     value = instance_variable_get(variable)
     value_key = keyify(value)
-    if my_class.collections[variable].has_key?(value.to_s)
+    if my_class.collections[variable].has_key?(value_key)
       my_class.collections[variable][value_key][object_id] = self
     else
       my_class.collections[variable][value_key] = { }
@@ -55,25 +55,25 @@ module Collector
     end
 
     def all_collection
-      self.collections[:all]
+      collections[:all]
     end
 
     def all_instances
-      self.collections[:all].values
+      collections[:all].values
     end
 
     def make_collections
-      self.collections[:all].each_value { |instance| instance.consider_all }
+      collections[:all].each_value { |instance| instance.consider_all }
     end
 
     def reset_collections
       all_inst = self.all_instances
-      self.collections.clear
+      collections.clear
       all_inst.each {|instance| instance.collect_as_made }
     end
 
     def possible_values_as_keys(variable)
-      self.collections[variable].keys
+      collections[variable].keys
     end
 
     def possible_values(variable)
@@ -85,6 +85,11 @@ module Collector
       end
 
       values
+    end
+
+    def all_with_value(variable, value)
+      key = keyify(value)
+      collections[variable][key].values
     end
 
   end

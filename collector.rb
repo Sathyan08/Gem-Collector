@@ -50,6 +50,10 @@ module Collector
   module ClassMethods
     attr_reader :collections
 
+    def keyify(value)
+      value.to_s.to_sym
+    end
+
     def all_collection
       self.collections[:all]
     end
@@ -67,6 +71,22 @@ module Collector
       self.collections.clear
       all_inst.each {|instance| instance.collect_as_made }
     end
+
+    def possible_values_as_keys(variable)
+      self.collections[variable].keys
+    end
+
+    def possible_values(variable)
+      keys = possible_values_as_keys(variable)
+      values = [ ]
+
+      keys.each do |value|
+        values << collections[variable][value].values.first.instance_variable_get(variable)
+      end
+
+      values
+    end
+
   end
 
 end

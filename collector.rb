@@ -77,14 +77,7 @@ module Collector
     end
 
     def possible_values(variable)
-      keys = possible_values_as_keys(variable)
-      values = [ ]
-
-      keys.each do |value|
-        values << collections[variable][value].values.first.instance_variable_get(variable)
-      end
-
-      values
+      possible_values_as_keys(variable).map { |value| eval(value.to_s) }
     end
 
     def equal_to(variable, value)
@@ -94,7 +87,7 @@ module Collector
 
     def most_common_value(variable)
       options = collections[variable].sort_by { |variable, objects| objects.count }
-      options.last.values.first.instance_variable_get(variable)
+      eval(options.last.first.to_s)
     end
 
     def less_than_or_equal_to(variable, value)

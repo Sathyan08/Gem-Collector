@@ -9,7 +9,7 @@ class TestClass
   def initialize
     @happy = true
     @sad = false
-    @age = rand(20..30)
+    @age = rand(25..26)
 
     collect_as_made
   end

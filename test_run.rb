@@ -1,8 +1,9 @@
 require_relative 'test_class'
 require 'pry'
 
-me = TestClass.new
-you = TestClass.new
+objs = []
+
+3.times { objs << TestClass.new }
 
 TestClass.make_collections
 

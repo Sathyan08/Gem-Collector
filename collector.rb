@@ -69,7 +69,7 @@ module Collector
     def reset_collections
       all_inst = self.all_instances
       collections.clear
-      all_inst.each {|instance| instance.collect_as_made }
+      all_inst.each {|instance| instance.collect_as_made } if all_inst
     end
 
     def possible_values_as_keys(variable)
@@ -90,43 +90,40 @@ module Collector
       eval(options.last.first.to_s)
     end
 
+    def with_most_common_value(variable)
+      options = collections[variable].sort_by { |variable, objects| objects.count }
+      options.last.last.values
+    end
+
     def less_than_or_equal_to(variable, value)
       possibilities = possible_values(variable)
       new_values = possibilities.select { |possibility| possibility <= value }
 
-      results = new_values.inject({ }) do | memo , new_value|
-        memo.merge(collections[variable][keyify(new_value)])
-      end
-
-      results.values
+      get_range(variable, new_values)
     end
 
     def less_than(variable, value)
       possibilities = possible_values(variable)
       new_values = possibilities.select { |possibility| possibility < value }
 
-      results = new_values.inject({ }) do | memo , new_value|
-        memo.merge(collections[variable][keyify(new_value)])
-      end
-
-      results.values
+      get_range(variable, new_values)
     end
 
     def greater_than_or_equal_to(variable, value)
       possibilities = possible_values(variable)
       new_values = possibilities.select { |possibility| possibility >= value }
 
-      results = new_values.inject({ }) do | memo , new_value|
-        memo.merge(collections[variable][keyify(new_value)])
-      end
-
-      results.values
+      get_range(variable, new_values)
     end
 
     def greater_than(variable, value)
       possibilities = possible_values(variable)
       new_values = possibilities.select { |possibility| possibility > value }
 
+      get_range(variable, new_values)
+    end
+
+    def get_range(variable, new_values)
       results = new_values.inject({ }) do | memo , new_value|
         memo.merge(collections[variable][keyify(new_value)])
       end

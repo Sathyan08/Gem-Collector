@@ -27,33 +27,19 @@ module Collector
     my_class.collections.has_key?(variable) ? check_value(variable) : make_collection(variable)
   end
 
-  def consider_method(method)
-    my_class.collections.has_key?(method) ? check_method(method) : make_method_collection(method)
-  end
-
   def make_collection(variable)
     my_class.collections[variable] = { }
     check_value(variable)
   end
 
-  def make_method_collection(method)
-    my_class.collections[method] = { }
-    check_method(method)
-  end
-
-  def check_method(method)
-    value = send(method)
-    key_check(method, value)
-  end
-
-  def check_value(variable)
-    value = instance_variable_get(variable)
+  def check_value(input)
+    var?(input) ? value = instance_variable_get(input) : value = send(input)
     value_key = keyify(value)
-    if my_class.collections[variable].has_key?(value_key)
-      my_class.collections[variable][value_key][object_id] = self
+    if my_class.collections[input].has_key?(value_key)
+      my_class.collections[input][value_key][object_id] = self
     else
-      my_class.collections[variable][value_key] = { }
-      my_class.collections[variable][value_key][object_id] = self
+      my_class.collections[input][value_key] = { }
+      my_class.collections[input][value_key][object_id] = self
     end
   end
 
@@ -65,6 +51,10 @@ module Collector
       my_class.collections[method_or_var][value_key] = { }
       my_class.collections[method_or_var][value_key][object_id] = self
     end
+  end
+
+  def var?(input)
+    input.to_s[0] == '@'
   end
 
   def keyify(value)

@@ -12,7 +12,7 @@ class TestClass
     @age = rand(25..26)
 
     collect_as_made
-    consider_method(:hi)
+    consider(:hi)
   end
 
   def hi

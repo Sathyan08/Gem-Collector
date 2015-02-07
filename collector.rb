@@ -9,13 +9,13 @@ module Collector
     self.class
   end
 
-  def make_collectable
+  def add_to_all
     my_class.collections[:all] = { } if !my_class.collections.has_key?(:all)
     my_class.collections[:all][object_id] = self
   end
 
   def collect_as_made
-    make_collectable
+    add_to_all
     consider_all
   end
 
@@ -92,9 +92,47 @@ module Collector
       collections[variable][key].values
     end
 
+    def most_common_value(variable)
+      options = collections[variable].sort_by { |variable, objects| objects.count }
+      options.last.values.first.instance_variable_get(variable)
+    end
+
     def less_than_or_equal_to(variable, value)
       possibilities = possible_values(variable)
       new_values = possibilities.select { |possibility| possibility <= value }
+
+      results = new_values.inject({ }) do | memo , new_value|
+        memo.merge(collections[variable][keyify(new_value)])
+      end
+
+      results.values
+    end
+
+    def less_than(variable, value)
+      possibilities = possible_values(variable)
+      new_values = possibilities.select { |possibility| possibility < value }
+
+      results = new_values.inject({ }) do | memo , new_value|
+        memo.merge(collections[variable][keyify(new_value)])
+      end
+
+      results.values
+    end
+
+    def greater_than_or_equal_to(variable, value)
+      possibilities = possible_values(variable)
+      new_values = possibilities.select { |possibility| possibility >= value }
+
+      results = new_values.inject({ }) do | memo , new_value|
+        memo.merge(collections[variable][keyify(new_value)])
+      end
+
+      results.values
+    end
+
+    def greater_than(variable, value)
+      possibilities = possible_values(variable)
+      new_values = possibilities.select { |possibility| possibility > value }
 
       results = new_values.inject({ }) do | memo , new_value|
         memo.merge(collections[variable][keyify(new_value)])
